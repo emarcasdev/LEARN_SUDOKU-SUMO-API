@@ -37,8 +37,14 @@ app.get("/", async (req, res) => {
 // Endpoint para obtener los mejores resultados
 app.get("/api/game/ranking", async (req, res) => {
   try {
+    // Recuperar la categoría por la que queremos filtrar
+    const { difficulty } = req.query;
+
+    // Comprobamos que recuperamos el dato para filtrar
+    if (!difficulty) return res.status(400).json({ message: "Falta la dificultad, asi que no se puede filtrar." });
+
     // Obtener los resultados 10 mejores ordenando de mayor a menor puntucacion
-    const results = await Result.find().sort({ points: -1 }).limit(10);
+    const results = await Result.find({ difficulty }).sort({ points: -1 }).limit(10);
     res.status(200).json(results);
   } catch (error) {
     res.status(500).json({ message: "Error en el servidor", error: error.message });
